@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Buscar • TVmaze</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="/css/main.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="c-header">
+    <div class="c-header__brand"><a href="/">TVmaze App</a></div>
+  </header>
+  <main class="container">
+    <h1 class="section__title">Resultados</h1>
+    <div id="grid" class="c-grid"></div>
+  </main>
+
+  <script type="module">
+    import { $, renderInto, skeletonCards, showCard } from "/js/ui.js";
+    import { searchShows } from "/js/api.js";
+
+    const params = new URLSearchParams(location.search);
+    const q = params.get("q") || "";
+    const grid = $("#grid");
+    renderInto(grid, skeletonCards());
+
+    searchShows(q).then(({data})=>{
+      if(!data.length) return renderInto(grid, `<p>No hay resultados para <b>${q}</b>.</p>`);
+      renderInto(grid, data.map(r => showCard(r.show)).join(""));
+    }).catch(()=> renderInto(grid, "<p>Error al buscar.</p>"));
+  </script>
+</body>
+</html>
